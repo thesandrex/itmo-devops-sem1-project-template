@@ -9,7 +9,7 @@ DEPLOYMENT_TYPE="local"
 
 if [ "$DEPLOYMENT_TYPE" == "local" ]; then
   sudo apt-get update
-  sudo apt-get install -y postgres-contrib
+  sudo apt-get install -y postgresql-contrib
 
   echo "Configuring PostgreSQL database and user..."
   sudo -u postgres psql -c "CREATE USER ${POSTGRES_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';" || true
