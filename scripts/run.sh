@@ -3,13 +3,11 @@ set -e
 
 REMOTE_USER="ssh-user"
 REMOTE_HOST="remote-host-ip"
-REMOTE_DIR="./app"
 APP_BINARY="app"
 DEPLOYMENT_TYPE="local"
 
 if [ "$DEPLOYMENT_TYPE" == "local" ]; then
   set -e
-  cd ${REMOTE_DIR}
 
   export PGPASSWORD=$POSTGRES_PASSWORD
 
