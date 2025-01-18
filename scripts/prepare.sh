@@ -47,8 +47,7 @@ elif [ "$DEPLOYMENT_TYPE" == "remote" ]; then
     sudo -u postgres psql -c "CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};" || true
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO ${POSTGRES_USER};"
 
-    echo "Environment preparation on the remote server is complete."
-  EOF
+    echo "Environment preparation on the remote server is complete." EOF
 
   echo "Remote environment prepared successfully."
 fi
