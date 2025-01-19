@@ -36,12 +36,6 @@ echo -e "
 #!/bin/bash
 
 echo \"Setting up PostgreSQL user and database on remote server...\"
-sudo -u postgres psql -c \"CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';\"
-
-sudo -u postgres psql -c \"CREATE DATABASE \"${POSTGRES_DB}\" OWNER ${POSTGRES_USER};\"
-
-sudo -u postgres psql -d \"${POSTGRES_DB}\" -c \"GRANT ALL PRIVILEGES ON DATABASE \"${POSTGRES_DB}\" TO ${POSTGRES_USER};\"
-  
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
 psql -h \"$POSTGRES_HOST\" -p \"$POSTGRES_PORT\" -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -c \"$SQL_QUERY\"
