@@ -14,6 +14,7 @@ echo "Checking and installing PostgreSQL Server on remote server ${REMOTE_HOST}.
 
 echo "{{ secrets.HOST_KEY }}" > test.pem
 chmod 600 test.pem
+mkdir -p "$HOME/.ssh"
 ssh-keyscan -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
 
 ssh -i test.pem "$REMOTE_USER"@"$REMOTE_HOST" bash -c "'
