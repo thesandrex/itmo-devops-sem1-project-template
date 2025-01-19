@@ -239,7 +239,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
             return 0, 0, 0, fmt.Errorf("failed to parse create_date: %v", err)
         }
 
-        _, err = db.Exec("INSERT INTO prices (category, price) VALUES ($1, $2)", category, price)
+        _, err = db.Exec("INSERT INTO prices (id, name, category, price, create_date) VALUES ($1, $2, $3, $4, $5)", id, name, category, price, createDate)
         if err != nil {
             return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
         }
