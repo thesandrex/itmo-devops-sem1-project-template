@@ -17,6 +17,8 @@ chmod 600 test.pem
 mkdir -p "$HOME/.ssh"
 ssh-keyscan -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
 
+cat test.pem
+
 ssh -i test.pem "$REMOTE_USER"@"$REMOTE_HOST" bash -c "'
 if ! command -v psql > /dev/null; then
     echo \"PostgreSQL Server is not installed. Installing...\"
