@@ -44,11 +44,11 @@ ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
 
   psql -h \"$POSTGRES_HOST\" -p \"$POSTGRES_PORT\" -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -c \"$SQL_QUERY\"
 
-  if [ ! -d 'test' ]; then
-      echo 'Репозиторий не найден. Клонируем...'
+  if [ ! -d \'test\' ]; then
+      echo \'Репозиторий не найден. Клонируем...\'
       git clone ${REPO_URL} test
   else
-      echo 'Репозиторий уже существует. Обновляем.'
+      echo \'Репозиторий уже существует. Обновляем.\'
       cd test
       git pull
   fi
