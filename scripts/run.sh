@@ -11,6 +11,16 @@ if [ "$DEPLOYMENT_TYPE" == "local" ]; then
 
   export PGPASSWORD=$POSTGRES_PASSWORD
 
+  SQL_QUERY="
+    CREATE TABLE IF NOT EXISTS prices (
+        id SERIAL PRIMARY KEY,
+        category TEXT NOT NULL,
+        price NUMERIC NOT NULL
+    );
+  "
+
+  psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "$SQL_QUERY"
+
   go mod tidy
   go build -o app main.go
 

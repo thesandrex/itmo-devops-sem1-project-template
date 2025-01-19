@@ -21,7 +21,7 @@ fi
 # POST запрос
 echo "Отправляем POST запрос с архивом $ARCHIVE_PATH..."
 POST_RESPONSE=$(curl -s -X POST "$BASE_URL" \
-    -H "Content-Type: application/zip" \
+    -H "Content-Type: multipart/form-data" \
     --data-binary @"$ARCHIVE_PATH")
 
 if [[ $? -ne 0 ]]; then
@@ -45,7 +45,7 @@ echo "POST запрос успешен. Добавлено $TOTAL_ITEMS элем
 # POST запрос
 echo "Отправляем POST запрос с архивом $ARCHIVE_PATH..."
 POST_RESPONSE=$(curl -s -X POST "$BASE_URL?type=$ARCHIVE_TYPE" \
-    -H "Content-Type: application/zip" \
+    -H "Content-Type: multipart/form-data" \
     --data-binary @"$ARCHIVE_PATH")
 
 if [[ $? -ne 0 ]]; then
