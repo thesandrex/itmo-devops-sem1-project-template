@@ -20,6 +20,7 @@ if ! command -v psql > /dev/null; then
     echo \"PostgreSQL Server is not installed. Installing...\"
     sudo apt-get update
     sudo apt-get install -y postgresql postgresql-contrib
+    sudo service postgresql start
 else
     echo \"PostgreSQL Server is already installed.\"
 fi
