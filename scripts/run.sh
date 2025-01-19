@@ -34,17 +34,9 @@ echo "Application successfully deployed in workflow."
 
 ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
   echo \"Setting up PostgreSQL user and database on remote server...\"
-  sudo -u postgres psql -c \"DO \$\$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
-          CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';
-      END IF;
-  END \$\$;\"
+  sudo -u postgres psql -c \"CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';\"
 
-  sudo -u postgres psql -c \"DO \$\$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
-          CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};
-      END IF;
-  END \$\$;\"
+  sudo -u postgres psql -c \"CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};\"
 
   sudo -u postgres psql -d \"${POSTGRES_DB}\" -c \"GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO ${POSTGRES_USER};\"
   
@@ -52,12 +44,12 @@ ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
 
   psql -h \"$POSTGRES_HOST\" -p \"$POSTGRES_PORT\" -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -c \"$SQL_QUERY\"
 
-  if [ ! -d '/home/ubuntu/test/' ]; then
+  if [ ! -d 'test' ]; then
       echo 'Репозиторий не найден. Клонируем...'
-      git clone ${REPO_URL} /home/ubuntu/test/
+      git clone ${REPO_URL} test
   else
       echo 'Репозиторий уже существует. Обновляем.'
-      cd /home/ubuntu/test/
+      cd test
       git pull
   fi
 
