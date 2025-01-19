@@ -71,6 +71,6 @@ scp -i test.pem remote.sh ${REMOTE_USER}@${REMOTE_HOST}:~/remote.sh
 
 cat remote.sh
 
-ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "sudo bash ~/remote.sh"
+ssh -i test.pem "${REMOTE_USER}"@"${REMOTE_HOST}" "bash ~/remote.sh"
 
 echo "$REMOTE_HOST"
