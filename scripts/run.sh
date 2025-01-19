@@ -33,8 +33,6 @@ curl -s http://localhost:8080/api/v0/prices || echo "Application is unavailable"
 echo "Application successfully deployed in workflow."
 
 ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
-  export PGPASSWORD=${POSTGRES_PASSWORD}
-
   echo \"Setting up PostgreSQL user and database on remote server...\"
   psql -U postgres -c \"DO \$\$ BEGIN
       IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
@@ -50,6 +48,8 @@ ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
 
   psql -U postgres -d \"${POSTGRES_DB}\" -c \"GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO ${POSTGRES_USER};\"
   
+  export PGPASSWORD=${POSTGRES_PASSWORD}
+
   psql -h \"$POSTGRES_HOST\" -p \"$POSTGRES_PORT\" -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -c \"$SQL_QUERY\"
 
   if [ ! -d '/home/ubuntu/test/' ]; then
