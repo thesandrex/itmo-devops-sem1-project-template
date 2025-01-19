@@ -38,9 +38,9 @@ echo -e "
 echo \"Setting up PostgreSQL user and database on remote server...\"
 sudo -u postgres psql -c \"CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';\"
 
-sudo -u postgres psql -c \"CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};\"
+sudo -u postgres psql -c \"CREATE DATABASE '${POSTGRES_DB}' OWNER ${POSTGRES_USER};\"
 
-sudo -u postgres psql -d \"${POSTGRES_DB}\" -c \"GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO ${POSTGRES_USER};\"
+sudo -u postgres psql -d \"${POSTGRES_DB}\" -c \"GRANT ALL PRIVILEGES ON DATABASE '${POSTGRES_DB}' TO ${POSTGRES_USER};\"
   
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
@@ -51,7 +51,7 @@ if [ ! -d 'test' ]; then
     git clone ${REPO_URL} test
 else
     echo 'Репозиторий уже существует. Обновляем.'
-    cd test
+    sudo cd test
     git pull
 fi
 
@@ -69,8 +69,6 @@ echo \"Application successfully deployed on ${REMOTE_HOST}\"
 
 scp -i test.pem remote.sh ${REMOTE_USER}@${REMOTE_HOST}:~/remote.sh
 
-cat remote.sh
-
-ssh -i test.pem "${REMOTE_USER}"@"${REMOTE_HOST}" "bash ~/remote.sh"
+ssh -i test.pem "${REMOTE_USER}"@"${REMOTE_HOST}" "sudo bash ~/remote.sh"
 
 echo "$REMOTE_HOST"
