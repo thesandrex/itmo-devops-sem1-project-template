@@ -214,7 +214,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
     totalCategories := make(map[string]struct{})
     totalPrice := 0.0
 
-    for _, line := range lines {
+    for i, line := range lines {
         if line == "" {
             continue
         }
