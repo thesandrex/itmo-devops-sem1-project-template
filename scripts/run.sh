@@ -38,8 +38,6 @@ echo -e "
 echo \"Setting up PostgreSQL user and database on remote server...\"
 export PGPASSWORD=${POSTGRES_PASSWORD}
 
-psql -h \"$POSTGRES_HOST\" -p \"$POSTGRES_PORT\" -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -c \"$SQL_QUERY\"
-
 if [ ! -d 'test' ]; then
     echo 'Репозиторий не найден. Клонируем...'
     mkdir test
