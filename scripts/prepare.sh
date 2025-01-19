@@ -12,9 +12,6 @@ pg_isready -h localhost -p 5432 -U "$POSTGRES_USER"
 
 echo "Checking and installing PostgreSQL Server on remote server ${REMOTE_HOST}..."
 
-SSH_KEY=${{ secrets.HOST_KEY }}
-echo "$SSH_KEY" > test.pem
-chmod 600 test.pem
 mkdir -p "$HOME/.ssh"
 ssh-keyscan -H "$REMOTE_HOST" >> ~/.ssh/known_hosts
 

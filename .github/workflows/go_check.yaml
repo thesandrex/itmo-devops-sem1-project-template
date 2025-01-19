@@ -44,6 +44,13 @@ jobs:
         chmod +x scripts/run.sh
         chmod +x scripts/tests.sh
 
+    - name: Setup SSH Key
+      env:
+        SSH_KEY: ${{ secrets.HOST_KEY }}
+      run: |
+        echo "$SSH_KEY" | tr -d '"' > ./test.pem
+        chmod 600 ./test.pem
+
     - name: Prepare environment
       run: ./scripts/prepare.sh
 
