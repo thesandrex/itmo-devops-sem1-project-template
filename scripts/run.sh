@@ -34,7 +34,7 @@ echo "Application successfully deployed in workflow."
 
 ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
   echo \"Setting up PostgreSQL user and database on remote server...\"
-  sudo -u postgres psql -c \"CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD '${POSTGRES_PASSWORD}';\"
+  sudo -u postgres psql -c \"CREATE ROLE ${POSTGRES_USER} WITH LOGIN PASSWORD \'${POSTGRES_PASSWORD}\';\"
 
   sudo -u postgres psql -c \"CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};\"
 
