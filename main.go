@@ -214,7 +214,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
     totalCategories := make(map[string]struct{})
     totalPrice := 0.0
 
-    if lines[1] == "id,name,category,price,create_date" {
+    if lines[0] == "id,name,category,price,create_date" {
         lines = lines[1:]
     }
 
