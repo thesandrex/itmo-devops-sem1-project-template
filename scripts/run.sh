@@ -33,7 +33,7 @@ curl -s http://localhost:8080/api/v0/prices || echo "Application is unavailable"
 echo "Application successfully deployed in workflow."
 
 ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
-  psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "$SQL_QUERY"
+  psql -h \"$POSTGRES_HOST\" -p \"$POSTGRES_PORT\" -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -c \"$SQL_QUERY\"
 
   echo \"Setting up PostgreSQL user and database on remote server...\"
   psql -c \"DO \$\$ BEGIN
@@ -63,12 +63,12 @@ ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
   go build -o app main.go
 
   nohup ./app > app.log 2>&1 &
-  echo "Application started"
+  echo \"Application started\"
 
   sleep 5
-  curl -s http://localhost:8080/api/v0/prices || echo "Application is unavailable"
+  curl -s http://localhost:8080/api/v0/prices || echo \"Application is unavailable\"
 
-  echo "Application successfully deployed on ${REMOTE_HOST}"
+  echo \"Application successfully deployed on ${REMOTE_HOST}\"
 '"
 
 echo "$REMOTE_HOST"
