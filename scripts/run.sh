@@ -32,7 +32,7 @@ curl -s http://localhost:8080/api/v0/prices || echo "Application is unavailable"
 
 echo "Application successfully deployed in workflow."
 
-ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
+ssh -i test.pem "${REMOTE_USER}@${REMOTE_HOST}" bash -c "'
   psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "$SQL_QUERY"
 
   echo \"Setting up PostgreSQL user and database on remote server...\"
