@@ -236,7 +236,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
 
         price, err := strconv.ParseFloat(priceStr, 64)
         if err != nil {
-            return 0, 0, 0, fmt.Errorf("failed to parse price at line %d: %s", i+1, err)
+            return 0, 0, 0, fmt.Errorf("failed to parse price at line %d: %s: %m", i+1, err, parts)
         }
 
         if createDateStr == "" {
