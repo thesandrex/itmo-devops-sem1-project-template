@@ -20,6 +20,8 @@ if [ "$DEPLOYMENT_TYPE" == "local" ]; then
   sleep 5
   curl -s http://localhost:8080/api/v0/prices || echo "Application is unavailable"
 
+  bash test_reqs.sh
+
   echo "Application deployed successfully on ${REMOTE_HOST}."
   echo ${REMOTE_HOST}
 fi
