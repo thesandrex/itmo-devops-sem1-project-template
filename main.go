@@ -221,23 +221,31 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
 
         parts := strings.Split(line, ",")
         if len(parts) != 5 {
-            return 0, 0, 0, fmt.Errorf("invalid line format: %s", line)
+            return 0, 0, 0, fmt.Errorf("invalid line format at line %d: %s", i+1, line)
         }
 
         id := strings.TrimSpace(parts[0])
         name := strings.TrimSpace(parts[1])
         category := strings.TrimSpace(parts[2])
+        priceStr := strings.TrimSpace(parts[3])
+        createDateStr := strings.TrimSpace(parts[4])
 
-        // Validate price
-        price, err := strconv.ParseFloat(strings.TrimSpace(parts[3]), 64)
-        if err != nil {
-            return 0, 0, 0, fmt.Errorf("failed to parse price: %v", err)
+        if priceStr == "" {
+            priceStr = "0.0"
         }
 
-        // Validate create_date
-        createDate, err := time.Parse("2006-01-02", strings.TrimSpace(parts[4]))
+        price, err := strconv.ParseFloat(priceStr, 64)
         if err != nil {
-            return 0, 0, 0, fmt.Errorf("failed to parse create_date: %v", err)
+            return 0, 0, 0, fmt.Errorf("failed to parse price at line %d: %s", i+1, err)
+        }
+
+        if createDateStr == "" {
+            createDateStr = "1970-01-01"
+        }
+
+        createDate, err := time.Parse("2006-01-02", createDateStr)
+        if err != nil {
+            return 0, 0, 0, fmt.Errorf("failed to parse create_date at line %d: %s", i+1, err)
         }
 
         _, err = db.Exec("INSERT INTO prices (id, name, category, price, create_date) VALUES ($1, $2, $3, $4, $5)", id, name, category, price, createDate)
