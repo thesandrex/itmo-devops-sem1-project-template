@@ -209,31 +209,45 @@ func extractFromTar(file io.Reader) ([]string, error) {
 }
 
 func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error) {
-	totalItems := 0
-	totalCategories := make(map[string]bool)
-	totalPrice := 0.0
+    totalItems := 0
+    totalCategories := make(map[string]struct{})
+    totalPrice := 0.0
 
-	for _, line := range lines {
-		fields := strings.Split(line, ",")
-		if len(fields) < 2 {
-			continue
-		}
+    for _, line := range lines {
+        if line == "" {
+            continue
+        }
 
-		category := fields[0]
-		price, err := strconv.ParseFloat(fields[1], 64)
-		if err != nil {
-			return 0, 0, 0, fmt.Errorf("failed to parse price: %v", err)
-		}
+        parts := strings.Split(line, ",")
+        if len(parts) != 5 {
+            return 0, 0, 0, fmt.Errorf("invalid line format: %s", line)
+        }
 
-		_, err = db.Exec("INSERT INTO prices (category, price) VALUES ($1, $2)", category, price)
-		if err != nil {
-			return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
-		}
+        id := strings.TrimSpace(parts[0])
+        name := strings.TrimSpace(parts[1])
+        category := strings.TrimSpace(parts[2])
 
-		totalItems++
-		totalCategories[category] = true
-		totalPrice += price
-	}
+        // Validate price
+        price, err := strconv.ParseFloat(strings.TrimSpace(parts[3]), 64)
+        if err != nil {
+            return 0, 0, 0, fmt.Errorf("failed to parse price: %v", err)
+        }
 
-	return totalItems, len(totalCategories), totalPrice, nil
+        // Validate create_date
+        createDate, err := time.Parse("2006-01-02", strings.TrimSpace(parts[4]))
+        if err != nil {
+            return 0, 0, 0, fmt.Errorf("failed to parse create_date: %v", err)
+        }
+
+        _, err = db.Exec("INSERT INTO prices (category, price) VALUES ($1, $2)", category, price)
+        if err != nil {
+            return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
+        }
+
+        totalItems++
+        totalCategories[category] = struct{}{}
+        totalPrice += price
+    }
+
+    return totalItems, len(totalCategories), totalPrice, nil
 }

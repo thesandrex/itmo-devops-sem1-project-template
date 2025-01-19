@@ -13,9 +13,11 @@ if [ "$DEPLOYMENT_TYPE" == "local" ]; then
 
   SQL_QUERY="
     CREATE TABLE IF NOT EXISTS prices (
-        id SERIAL PRIMARY KEY,
-        category TEXT NOT NULL,
-        price NUMERIC NOT NULL
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255),
+      category VARCHAR(255),
+      price DECIMAL,
+      create_date DATE
     );
   "
 

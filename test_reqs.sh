@@ -114,6 +114,7 @@ check_api_advanced() {
     if [[ $response == *"total_items"* ]]; then
         echo -e "${GREEN}✓ POST запрос с ZIP успешен${NC}"
     else
+        echo "$response"
         echo -e "${RED}✗ POST запрос с ZIP неуспешен${NC}"
         return 1
     fi
@@ -124,6 +125,7 @@ check_api_advanced() {
     if [[ $response == *"total_items"* ]]; then
         echo -e "${GREEN}✓ POST запрос с TAR успешен${NC}"
     else
+        echo "$response"
         echo -e "${RED}✗ POST запрос с TAR неуспешен${NC}"
         return 1
     fi
