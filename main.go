@@ -217,6 +217,21 @@ func extractFromTar(file io.Reader) ([]string, error) {
 	return lines, nil
 }
 
+func processCounts(db *sql.DB) (int, int, float64, error) {
+    query := `SELECT COUNT(*), COUNT(DISTINCT category), SUM(price) FROM prices`
+
+    var totalItems int
+    var totalCategories int
+    var totalPrice float64
+
+    err := db.QueryRow(query).Scan(&totalItems, &totalCategories, &totalPrice)
+    if err != nil {
+        return 0, 0, 0, fmt.Errorf("failed to execute query: %v", err)
+    }
+
+    return totalItems, totalCategories, totalPrice, nil
+}
+
 func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error) {
     totalItems := 0
     totalCategories := make(map[string]struct{})
@@ -270,7 +285,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
             return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
         }
 
-    totalItems, totalCategories, totalPrice, err := getCounts(db)
+    totalItems, totalCategories, totalPrice, err := processCounts(db)
     if err != nil {
 	log.Fatalf("error processing data: %v", err)
     }
@@ -278,17 +293,3 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
     return totalItems, totalCategories, totalPrice, nil
 }
 
-func getCounts(db *sql.DB) (int, int, float64, error) {
-    query := `SELECT COUNT(*), COUNT(DISTINCT category), SUM(price) FROM prices`
-
-    var totalItems int
-    var totalCategories int
-    var totalPrice float64
-
-    err := db.QueryRow(query).Scan(&totalItems, &totalCategories, &totalPrice)
-    if err != nil {
-	return 0, 0, 0, fmt.Errorf("failed to execute query: %v", err)
-    }
-
-    return totalItems, totalCategories, totalPrice, nil
-}
