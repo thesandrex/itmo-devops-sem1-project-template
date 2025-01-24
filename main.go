@@ -268,28 +268,17 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
         createDateStr := strings.TrimSpace(parts[4])
 
         if priceStr == "" {
-            priceStr = "0.0"
+          priceStr = "0.0"
         }
-
-        price, err := strconv.ParseFloat(priceStr, 64)
-        if err != nil {
-            return 0, 0, 0, fmt.Errorf("failed to parse price at line %d: %s: %m", i+1, err, parts)
-        }
-
         if createDateStr == "" {
-            createDateStr = "1970-01-01"
+          createDateStr = "1970-01-01"
         }
 
-        createDate, err := time.Parse("2006-01-02", createDateStr)
-        if err != nil {
-            return 0, 0, 0, fmt.Errorf("failed to parse create_date at line %d: %s", i+1, err)
-        }
-
-        data = append(data, []string{id, name, category, price, createDate})
+        data = append(data, []string{id, name, category, priceStr, createDateStr})
     }
     
     for _, item := range data {
-        _, err = db.Exec("INSERT INTO prices (id, name, category, price, create_date) VALUES ($1, $2, $3, $4, $5)", item[0], item[1], item[2], item[3], item[4])
+        _, err := db.Exec("INSERT INTO prices (id, name, category, price, create_date) VALUES ($1, $2, $3, $4, $5)", item[0], item[1], item[2], item[3], item[4])
         if err != nil {
             return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
         }
