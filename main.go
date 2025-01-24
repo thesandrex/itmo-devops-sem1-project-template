@@ -114,9 +114,9 @@ func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			return
 		}
                 
-                price = fmt.Sprintf("%.2f", price)
-                createDate = createDate.Format("2006-01-02")
-		data = append(data, []string{strconv.FormatInt(id, 10), name, category, price, createDate})
+                priceStr = fmt.Sprintf("%.2f", price)
+                createDateStr = createDate.Format("2006-01-02")
+		data = append(data, []string{strconv.FormatInt(id, 10), name, category, priceStr, createDateStr})
 	}
         if err := rows.Err(); err != nil {
           fmt.Errorf("Failed to parse rows: %v", err)
