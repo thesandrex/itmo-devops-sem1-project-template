@@ -225,9 +225,13 @@ func processCounts(db *sql.DB) (int, int, float64, error) {
     var totalPrice float64
     var err error
 
-    err := db.QueryRow(query).Scan(&totalItems, &totalCategories, &totalPrice)
+    row, err := db.QueryRow(query)
     if err != nil {
         return 0, 0, 0, fmt.Errorf("failed to execute query: %v", err)
+    }
+    err := row.Scan(&totalItems, &totalCategories, &totalPrice)
+    if err != nil {
+        return 0, 0, 0, fmt.Errorf("failed to scan columns: %v", err)
     }
 
     return totalItems, totalCategories, totalPrice, nil
