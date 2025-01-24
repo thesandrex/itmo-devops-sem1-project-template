@@ -92,63 +92,64 @@ func handlePost(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id, name, category, price, create_date FROM prices")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to query database: %v", err), http.StatusInternalServerError)
-		return
-	}
-	defer rows.Close()
+    rows, err := db.Query("SELECT id, name, category, price, create_date FROM prices")
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Failed to query database: %v", err), http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
 
-	var data [][]string
-	data = append(data, []string{"Id", "Name", "Category", "Price", "CreateDate"})
-	for rows.Next() {
-                var id int64
-                var name string
-		var category string
-		var price float64
-                var createDate time.Time
-		
-                err := rows.Scan(&id, &name, &category, &price, &createDate) 
-                if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to scan row: %v", err), http.StatusInternalServerError)
-			return
-		}
-                
-                idStr := strconv.FormatInt(id, 10)
-                priceStr := fmt.Sprintf("%.2f", price)
-                createDateStr := createDate.Format("2006-01-02")
-		data = append(data, []string{idStr, name, category, priceStr, createDateStr})
-	}
-        
-        err := rows.Err() 
+    var data [][]string
+    data = append(data, []string{"Id", "Name", "Category", "Price", "CreateDate"})
+    for rows.Next() {
+        var id int64
+        var name string
+        var category string
+        var price float64
+        var createDate time.Time
+
+        err = rows.Scan(&id, &name, &category, &price, &createDate)
         if err != nil {
-          fmt.Errorf("Failed to parse rows: %v", err)
-          return
-	  // спасибо, я хотел сделать продвинутый вариант
+            http.Error(w, fmt.Sprintf("Failed to scan row: %v", err), http.StatusInternalServerError)
+            return
         }
 
-	buf := new(bytes.Buffer)
-	zipWriter := zip.NewWriter(buf)
-	fileWriter, err := zipWriter.Create("data.csv")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to create zip file: %v", err), http.StatusInternalServerError)
-		return
-	}
+        idStr := strconv.FormatInt(id, 10)
+        priceStr := fmt.Sprintf("%.2f", price)
+        createDateStr := createDate.Format("2006-01-02")
 
-	csvWriter := csv.NewWriter(fileWriter)
-	if err := csvWriter.WriteAll(data); err != nil {
-		http.Error(w, fmt.Sprintf("Failed to write CSV data: %v", err), http.StatusInternalServerError)
-		return
-	}
+        data = append(data, []string{idStr, name, category, priceStr, createDateStr})
+    }
+        
+    err = rows.Err() 
+    if err != nil {
+      fmt.Errorf("Failed to parse rows: %v", err)
+      return
+      // спасибо, я хотел сделать продвинутый вариант
+    }
 
-	if err := zipWriter.Close(); err != nil {
-		http.Error(w, fmt.Sprintf("Failed to close zip writer: %v", err), http.StatusInternalServerError)
-		return
-	}
+    buf := new(bytes.Buffer)
+    zipWriter := zip.NewWriter(buf)
+    fileWriter, err := zipWriter.Create("data.csv")
+    if err != nil {
+	http.Error(w, fmt.Sprintf("Failed to create zip file: %v", err), http.StatusInternalServerError)
+	return
+    }
 
-	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", "attachment; filename=data.zip")
-	w.Write(buf.Bytes())
+    csvWriter := csv.NewWriter(fileWriter)
+    if err := csvWriter.WriteAll(data); err != nil {
+	http.Error(w, fmt.Sprintf("Failed to write CSV data: %v", err), http.StatusInternalServerError)
+	return
+    }
+
+    if err := zipWriter.Close(); err != nil {
+	http.Error(w, fmt.Sprintf("Failed to close zip writer: %v", err), http.StatusInternalServerError)
+	return
+    }
+
+    w.Header().Set("Content-Type", "application/zip")
+    w.Header().Set("Content-Disposition", "attachment; filename=data.zip")
+    w.Write(buf.Bytes())
 }
 
 func processArchive(db *sql.DB, file io.Reader, archiveType string) (int, int, float64, error) {
