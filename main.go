@@ -106,12 +106,12 @@ func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
                 var name string
 		var category string
 		var price float64
-                var createDate time.Date
+                var createDate time.Time
 		if err := rows.Scan(&id, &name, &category, &price, &createDate); err != nil {
 			http.Error(w, fmt.Sprintf("Failed to scan row: %v", err), http.StatusInternalServerError)
 			return
 		}
-		data = append(data, []string{strconv.FormatInt(id, 10), name, category, fmt.Sprintf("%.2f", price), createDate.String()})
+		data = append(data, []string{strconv.FormatInt(id, 10), name, category, fmt.Sprintf("%.2f", price), createDate.Format("2006-01-02")})
 	}
         if err = rows.Err(); err != nil {
           fmt.Errorf("Failed to parse rows: %v", err)
@@ -223,6 +223,7 @@ func processCounts(db *sql.DB) (int, int, float64, error) {
     var totalItems int
     var totalCategories int
     var totalPrice float64
+    var err error
 
     err := db.QueryRow(query).Scan(&totalItems, &totalCategories, &totalPrice)
     if err != nil {
@@ -234,7 +235,7 @@ func processCounts(db *sql.DB) (int, int, float64, error) {
 
 func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error) {
     totalItems := 0
-    totalCategories := make(map[string]struct{})
+    totalCategories := 0
     totalPrice := 0.0
 
     if lines[0] == "id,name,category,price,create_date" {
