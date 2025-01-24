@@ -119,7 +119,9 @@ func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
                 createDateStr := createDate.Format("2006-01-02")
 		data = append(data, []string{idStr, name, category, priceStr, createDateStr})
 	}
-        if err := rows.Err(); err != nil {
+        
+        err := rows.Err() 
+        if err != nil {
           fmt.Errorf("Failed to parse rows: %v", err)
           return
 	  // спасибо, я хотел сделать продвинутый вариант
