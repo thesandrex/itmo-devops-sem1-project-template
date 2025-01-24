@@ -284,6 +284,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
         if err != nil {
             return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
         }
+    }
 
     totalItems, totalCategories, totalPrice, err := processCounts(db)
     if err != nil {
