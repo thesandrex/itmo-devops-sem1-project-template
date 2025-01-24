@@ -114,8 +114,8 @@ func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 			return
 		}
                 
-                priceStr = fmt.Sprintf("%.2f", price)
-                createDateStr = createDate.Format("2006-01-02")
+                priceStr := fmt.Sprintf("%.2f", price)
+                createDateStr := createDate.Format("2006-01-02")
 		data = append(data, []string{strconv.FormatInt(id, 10), name, category, priceStr, createDateStr})
 	}
         if err := rows.Err(); err != nil {
