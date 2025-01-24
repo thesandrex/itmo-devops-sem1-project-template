@@ -92,7 +92,7 @@ func handlePost(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT category, price FROM prices")
+	rows, err := db.Query("SELECT id, name, category, price, create_date FROM prices")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to query database: %v", err), http.StatusInternalServerError)
 		return
@@ -100,16 +100,24 @@ func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	var data [][]string
-	data = append(data, []string{"Category", "Price"})
+	data = append(data, []string{"Id", "Name", "Category", "Price", "CreateDate"})
 	for rows.Next() {
+                var id int64
+                var name string
 		var category string
 		var price float64
-		if err := rows.Scan(&category, &price); err != nil {
+                var createDate time.Date
+		if err := rows.Scan(&id, &name, &category, &price, &createDate); err != nil {
 			http.Error(w, fmt.Sprintf("Failed to scan row: %v", err), http.StatusInternalServerError)
 			return
 		}
-		data = append(data, []string{category, fmt.Sprintf("%.2f", price)})
+		data = append(data, []string{strconv.FormatInt(id, 10), name, category, fmt.Sprintf("%.2f", price), createDate.String()})
 	}
+        if err = rows.Err(); err != nil {
+          fmt.Errorf("Failed to parse rows: %v", err)
+          return
+	  // спасибо, я хотел сделать продвинутый вариант
+        }
 
 	buf := new(bytes.Buffer)
 	zipWriter := zip.NewWriter(buf)
@@ -218,6 +226,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
         lines = lines[1:]
     }
 
+    var data [][]string
     for i, line := range lines {
         if line == "" {
             continue
@@ -252,15 +261,34 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
             return 0, 0, 0, fmt.Errorf("failed to parse create_date at line %d: %s", i+1, err)
         }
 
-        _, err = db.Exec("INSERT INTO prices (id, name, category, price, create_date) VALUES ($1, $2, $3, $4, $5)", id, name, category, price, createDate)
+        data = append(data, []string{id, name, category, price, createDate})
+    }
+    
+    for _, item := range data {
+        _, err = db.Exec("INSERT INTO prices (id, name, category, price, create_date) VALUES ($1, $2, $3, $4, $5)", item[0], item[1], item[2], item[3], item[4])
         if err != nil {
             return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
         }
 
-        totalItems++
-        totalCategories[category] = struct{}{}
-        totalPrice += price
+    totalItems, totalCategories, totalPrice, err := getCounts(db)
+    if err != nil {
+	log.Fatalf("error processing data: %v", err)
     }
 
-    return totalItems, len(totalCategories), totalPrice, nil
+    return totalItems, totalCategories, totalPrice, nil
+}
+
+func getCounts(db *sql.DB) (int, int, float64, error) {
+    query := `SELECT COUNT(*), COUNT(DISTINCT category), SUM(price) FROM prices`
+
+    var totalItems int
+    var totalCategories int
+    var totalPrice float64
+
+    err := db.QueryRow(query).Scan(&totalItems, &totalCategories, &totalPrice)
+    if err != nil {
+	return 0, 0, 0, fmt.Errorf("failed to execute query: %v", err)
+    }
+
+    return totalItems, totalCategories, totalPrice, nil
 }
