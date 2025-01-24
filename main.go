@@ -107,13 +107,15 @@ func handleGet(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		var category string
 		var price float64
                 var createDate time.Time
-		if err := rows.Scan(&id, &name, &category, &price, &createDate); err != nil {
+		
+                err := rows.Scan(&id, &name, &category, &price, &createDate) 
+                if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to scan row: %v", err), http.StatusInternalServerError)
 			return
 		}
 		data = append(data, []string{strconv.FormatInt(id, 10), name, category, fmt.Sprintf("%.2f", price), createDate.Format("2006-01-02")})
 	}
-        if err = rows.Err(); err != nil {
+        if err := rows.Err(); err != nil {
           fmt.Errorf("Failed to parse rows: %v", err)
           return
 	  // спасибо, я хотел сделать продвинутый вариант
