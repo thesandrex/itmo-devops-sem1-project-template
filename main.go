@@ -226,7 +226,7 @@ func extractFromTar(file io.Reader) ([]string, error) {
 	return lines, nil
 }
 
-func processCounts(tx *sql.Tx) (int, int, float64, error) {
+func processCounts(tx *sql.Tx) (int, float64, error) {
     query := `SELECT COUNT(DISTINCT category), SUM(price) FROM prices`
 
     var totalCategories int
