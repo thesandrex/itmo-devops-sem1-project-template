@@ -288,7 +288,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
         }
     }
 
-    totalCategories, totalPrice, err := processCounts(tx)
+    totalCategories, totalPrice, err = processCounts(tx)
     if err != nil {
         tx.Rollback()
 	log.Fatalf("error processing data: %v", err)
