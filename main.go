@@ -273,13 +273,13 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
         data = append(data, []string{id, name, category, priceStr, createDateStr})
     }
 
-    totalItems = len(data)
-
     tx, err := db.Begin()
     if err != nil {
         return 0, 0, 0, fmt.Errorf("failed to begin transaction: %v", err)
     }
     
+    totalItems = len(data)
+
     for _, item := range data {
         _, err = tx.Exec("INSERT INTO prices (name, category, price, create_date) VALUES ($1, $2, $3, $4)", item[1], item[2], item[3], item[4])
         if err != nil {
