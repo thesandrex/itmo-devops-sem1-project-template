@@ -232,7 +232,7 @@ func processCounts(tx *sql.Tx) (int, float64, error) {
     var totalCategories int
     var totalPrice float64
 
-    err := tx.QueryRow(query).Scan(&totalCategories, &totalPrice)
+    err = tx.QueryRow(query).Scan(&totalCategories, &totalPrice)
 
     return totalCategories, totalPrice, err
 }
