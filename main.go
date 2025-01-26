@@ -232,7 +232,7 @@ func processCounts(tx *sql.Tx) (int, float64, error) {
     var totalCategories int
     var totalPrice float64
 
-    err = tx.QueryRow(query).Scan(&totalCategories, &totalPrice)
+    err := tx.QueryRow(query).Scan(&totalCategories, &totalPrice)
 
     return totalCategories, totalPrice, err
 }
@@ -281,7 +281,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
     }
     
     for _, item := range data {
-        _, err := tx.Exec("INSERT INTO prices (name, category, price, create_date) VALUES ($1, $2, $3, $4)", item[1], item[2], item[3], item[4])
+        _, err = tx.Exec("INSERT INTO prices (name, category, price, create_date) VALUES ($1, $2, $3, $4)", item[1], item[2], item[3], item[4])
         if err != nil {
             tx.Rollback()
             return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
@@ -294,7 +294,8 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
 	log.Fatalf("error processing data: %v", err)
     }
 
-    if err = tx.Commit(); err != nil {
+    err = tx.Commit()
+    if err != nil {
         return 0, 0, 0, fmt.Errorf("failed to commit transaction: %v", err)
     }
 
