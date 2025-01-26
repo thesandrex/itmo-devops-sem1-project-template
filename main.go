@@ -226,19 +226,15 @@ func extractFromTar(file io.Reader) ([]string, error) {
 	return lines, nil
 }
 
-func processCounts(db *sql.DB) (int, int, float64, error) {
-    query := `SELECT COUNT(*), COUNT(DISTINCT category), SUM(price) FROM prices`
+func processCounts(tx *sql.Tx) (int, int, float64, error) {
+    query := `SELECT COUNT(DISTINCT category), SUM(price) FROM prices`
 
-    var totalItems int
     var totalCategories int
     var totalPrice float64
 
-    err := db.QueryRow(query).Scan(&totalItems, &totalCategories, &totalPrice)
-    if err != nil {
-        return 0, 0, 0, fmt.Errorf("failed to execute query: %v", err)
-    }
+    err := tx.QueryRow(query).Scan(&totalCategories, &totalPrice)
 
-    return totalItems, totalCategories, totalPrice, nil
+    return totalCategories, totalPrice, err
 }
 
 func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error) {
@@ -276,17 +272,30 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
 
         data = append(data, []string{id, name, category, priceStr, createDateStr})
     }
+
+    totalItems = len(data)
+
+    tx, err := db.Begin()
+    if err != nil {
+        return 0, 0, 0, fmt.Errorf("failed to begin transaction: %v", err)
+    }
     
     for _, item := range data {
-        _, err := db.Exec("INSERT INTO prices (id, name, category, price, create_date) VALUES ($1, $2, $3, $4, $5)", item[0], item[1], item[2], item[3], item[4])
+        _, err := tx.Exec("INSERT INTO prices (name, category, price, create_date) VALUES ($1, $2, $3, $4)", item[1], item[2], item[3], item[4])
         if err != nil {
+            tx.Rollback()
             return 0, 0, 0, fmt.Errorf("failed to insert into database: %v", err)
         }
     }
 
-    totalItems, totalCategories, totalPrice, err := processCounts(db)
+    totalCategories, totalPrice, err := processCounts(tx)
     if err != nil {
+        tx.Rollback()
 	log.Fatalf("error processing data: %v", err)
+    }
+
+    if err := tx.Commit(); err != nil {
+        return 0, 0, 0, fmt.Errorf("failed to commit transaction: %v", err)
     }
 
     return totalItems, totalCategories, totalPrice, nil

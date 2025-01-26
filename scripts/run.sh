@@ -10,8 +10,7 @@ export PGPASSWORD=$POSTGRES_PASSWORD
 
 SQL_QUERY="
   CREATE TABLE IF NOT EXISTS prices (
-    _id SERIAL PRIMARY KEY,
-    id INT,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     category VARCHAR(255),
     price DECIMAL,
