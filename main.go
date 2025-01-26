@@ -294,7 +294,7 @@ func processLinesAndInsert(db *sql.DB, lines []string) (int, int, float64, error
 	log.Fatalf("error processing data: %v", err)
     }
 
-    if err := tx.Commit(); err != nil {
+    if err = tx.Commit(); err != nil {
         return 0, 0, 0, fmt.Errorf("failed to commit transaction: %v", err)
     }
 
